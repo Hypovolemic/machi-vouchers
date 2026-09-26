@@ -1,0 +1,18 @@
+# Dependencies and builds
+node_modules/
+.next/
+out/
+contracts/**/build/
+*.tsbuildinfo
+
+# Secrets and local state: never commit
+.env*
+!.env.example
+.data/
+*.key
+*.keystore
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/

@@ -9,6 +9,7 @@ import {
   accountUrl,
   date,
   short,
+  txUrl,
   useProgram,
   yen,
   type ActionResult,
@@ -75,8 +76,9 @@ export function CardView() {
 
       <div className="grid">
         <div className="card">
+          <span className="chip series">Shared series · across small shops</span>
           <h2>
-            Stamp rally <span className="ja">スタンプラリー</span>
+            Shared stamp rally <span className="ja">スタンプラリー</span>
           </h2>
           <div className="stamps" aria-label={`${r.rally.length} of ${p.rallyTarget} shops`}>
             {Array.from({ length: p.rallyTarget }, (_, i) => (
@@ -86,8 +88,9 @@ export function CardView() {
             ))}
           </div>
           <p className="muted">
-            {r.rally.length} of {p.rallyTarget} different small shops. The fifth adds{' '}
-            {yen(p.rallyBonus)} to the small-shop vouchers. One stamp per shop per day.
+            {r.rally.length} of {p.rallyTarget} different small shops. Stamps from different small
+            shops add up here; the fifth adds {yen(p.rallyBonus)} to the small-shop vouchers. Chain
+            stores don&apos;t count.
           </p>
           {r.bonusTickets > 0 && (
             <button className="button" disabled={!!busy} onClick={() => run('claim', { action: 'claim' })}>
@@ -106,6 +109,40 @@ export function CardView() {
               {short(r.address)} on Sui ↗
             </a>
           </p>
+        </div>
+      </div>
+
+      <div className="card">
+        <span className="chip">Individual series · one card per shop</span>
+        <h2>
+          Shop stamp cards <span className="ja">お店のスタンプカード</span>
+        </h2>
+        <p className="muted">
+          Each shop&apos;s own card counts only that shop&apos;s stamps, for shops that run their own
+          rewards. A stamp at a small shop counts on its own card and in the shared rally; a chain
+          store&apos;s stamps stay on its own card. Counted from the stamp records on Sui.
+        </p>
+        <div className="shop-cards">
+          {shops.map((s) => {
+            const count = r.shopStamps[s.id] || 0;
+            return (
+              <div key={s.id} className="shop-card">
+                <div className="row" style={{ justifyContent: 'space-between' }}>
+                  <strong>{s.name}</strong>
+                  <span className="num">{count} {count === 1 ? 'stamp' : 'stamps'}</span>
+                </div>
+                <div className="mini-stamps" aria-hidden="true">
+                  {Array.from({ length: Math.max(count, 5) }, (_, i) => (
+                    <span key={i} className={`mini-hanko ${i < count ? 'on' : ''}`} />
+                  ))}
+                </div>
+                <small className="muted">
+                  {s.tier === 'small' ? 'Also counts toward the shared rally' : 'This shop only (chain store)'}
+                  {r.stampedToday.includes(s.id) ? ' · stamped today' : ''}
+                </small>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -143,10 +180,53 @@ export function CardView() {
         <Result result={result} error={failure} />
       </div>
 
+      <Activity />
+
       <button className="button outline" disabled={!!busy} onClick={() => run('buy', { action: 'buy' })}>
         {busy === 'buy' ? 'Buying…' : `Buy another set: pay ${yen(p.price)}, get ${yen(p.face)}`}
       </button>
     </>
+  );
+}
+
+const activityLabel: Record<string, string> = {
+  Paid: 'Paid',
+  Stamped: 'Stamp',
+  BonusIssued: 'Rally bonus earned',
+  BonusClaimed: 'Bonus collected',
+  Purchased: 'Bought a set',
+};
+
+/** Yuki's recent onchain activity, each line linked to its transaction. */
+function Activity() {
+  const { data } = useProgram();
+  if (!data) return null;
+  const mine = data.events.filter((e) => e.resident === data.resident.address && activityLabel[e.type]);
+  const name = (id?: string) => data.shops.find((s) => s.id === id)?.name || '';
+  return (
+    <div className="card">
+      <h2>Yuki&apos;s recent activity</h2>
+      {mine.length ? (
+        <table>
+          <tbody>
+            {mine.slice(0, 12).map((e) => (
+              <tr key={`${e.digest}-${e.type}`}>
+                <td>{activityLabel[e.type]}</td>
+                <td>{name(e.shop)}</td>
+                <td className="right num">{e.amount !== undefined ? yen(e.amount) : ''}</td>
+                <td className="right">
+                  <a href={txUrl(e.digest)} target="_blank" rel="noreferrer">
+                    {short(e.digest)} ↗
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p className="muted">Payments, stamps and bonuses appear here with their Sui transactions.</p>
+      )}
+    </div>
   );
 }
 

@@ -384,3 +384,38 @@ footer.foot {
     font-size: 30px;
   }
 }
+.chip.series {
+  color: var(--shu-text);
+  border-color: var(--shu);
+}
+.card > .chip {
+  margin-bottom: 8px;
+}
+.shop-cards {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  margin-top: 12px;
+}
+.shop-card {
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: grid;
+  gap: 8px;
+}
+.mini-stamps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.mini-hanko {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px dashed var(--nezumi);
+}
+.mini-hanko.on {
+  border: 3px solid var(--shu);
+  background: color-mix(in srgb, var(--shu) 18%, transparent);
+}

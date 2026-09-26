@@ -25,7 +25,8 @@ function ShopPicker({ value, onChange }: { value: string; onChange: (id: string)
 export function CounterView() {
   const params = useSearchParams();
   const [shopId, setShopId] = useState(params.get('shop') || 'ramen');
-  const { data, error } = useProgram();
+  // The counter refreshes quickly so a payment shows up here moments after Yuki pays.
+  const { data, error } = useProgram(3_000);
   if (!data) return <Loading error={error} />;
   const shop = data.shops.find((s) => s.id === shopId) || data.shops[0];
   const paid = data.events.filter((e) => e.type === 'Paid' && e.shop === shop.id);
@@ -120,13 +121,31 @@ export function StampView() {
       <div className="card">
         <h2>Customer: Yuki</h2>
         <p className="muted">
-          Demo card {short(r.address)} · {r.rally.length} of {data.program.rallyTarget} small shops this
-          round
+          Demo card {short(r.address)}
           {done ? ' · already stamped here today' : ''}
         </p>
-        {shop.tier === 'chain' && (
-          <p className="muted">Chain stores can stamp, but only small shops count toward the rally.</p>
-        )}
+        <div className="grid">
+          <div className="shop-card">
+            <span className="chip">Individual series · {shop.name}&apos;s own card</span>
+            <strong className="num">
+              {r.shopStamps[shop.id] || 0} {(r.shopStamps[shop.id] || 0) === 1 ? 'stamp' : 'stamps'}
+            </strong>
+            <small className="muted">Counts only stamps from {shop.name}.</small>
+          </div>
+          <div className="shop-card">
+            <span className="chip series">Shared series · stamp rally</span>
+            <strong className="num">
+              {r.rally.length} of {data.program.rallyTarget} small shops
+            </strong>
+            <small className="muted">
+              {shop.tier === 'small'
+                ? r.rally.includes(shop.id)
+                  ? `${shop.name} is already in this round of the rally.`
+                  : `A stamp here also counts toward the shared rally.`
+                : 'Chain store: this stamp stays on the shop’s own card only.'}
+            </small>
+          </div>
+        </div>
         {!armed ? (
           <button className="button big" disabled={busy} onClick={() => setArmed(true)}>
             +1 stamp

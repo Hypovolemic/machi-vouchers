@@ -134,10 +134,33 @@ async function dynamicValue(parentId: string, type: string, name: Uint8Array) {
 const JST = 9 * 3_600_000;
 const today = () => Math.floor((Date.now() + JST) / 86_400_000);
 
+/** How many stamps a resident has at each shop, counted from the program's Stamped events. */
+async function stampsByShop(address: string) {
+  const byAddress = new Map(SHOPS.map((s) => [shopAddress(s.id), s.id]));
+  const counts: Record<string, number> = Object.fromEntries(SHOPS.map((s) => [s.id, 0]));
+  let before: string | null = null;
+  for (let page = 0; page < 6; page++) {
+    const res = await sui().listEvents({
+      filter: { eventType: `${ids().pkg}::program::Stamped` },
+      order: 'descending',
+      limit: 50,
+      ...(before ? { before } : {}),
+    });
+    for (const e of res.events) {
+      const json = (e.json || {}) as Record<string, unknown>;
+      const shop = byAddress.get(String(json.shop));
+      if (json.resident === address && shop) counts[shop] += 1;
+    }
+    if (!res.hasNextPage || !res.endCursor) break;
+    before = res.endCursor;
+  }
+  return counts;
+}
+
 /** Yuki's card, straight from chain: balances, stamp card, bonus tickets, today's stamps. */
 export async function readResident(program: Awaited<ReturnType<typeof readProgram>>) {
   const address = resident().toSuiAddress();
-  const [local, any, card, tickets, stampedToday] = await Promise.all([
+  const [local, any, card, tickets, stampedToday, shopStamps] = await Promise.all([
     tokens(address, 'local'),
     tokens(address, 'any'),
     dynamicValue(program.cardsTable, 'address', bcs.Address.serialize(address).toBytes()),
@@ -152,6 +175,7 @@ export async function readResident(program: Awaited<ReturnType<typeof readProgra
         return raw && n(bcs.u64().parse(raw)) === today() ? shop.id : null;
       }),
     ),
+    stampsByShop(address),
   ]);
   const parsed = card ? CardBcs.parse(card) : null;
   const byAddress = new Map(SHOPS.map((s) => [shopAddress(s.id), s.id]));
@@ -163,6 +187,7 @@ export async function readResident(program: Awaited<ReturnType<typeof readProgra
     rally: parsed ? parsed.rally_shops.map((a) => byAddress.get(a) || a) : [],
     bonusTickets: tickets.objects.length,
     stampedToday: stampedToday.filter(Boolean) as string[],
+    shopStamps,
   };
 }
 
@@ -183,6 +208,7 @@ export type ChainEvent = {
   shop?: string;
   amount?: number;
   local?: boolean;
+  resident?: string;
   checkpoint: string | null;
 };
 
@@ -203,6 +229,7 @@ export async function readEvents(limit = 40): Promise<ChainEvent[]> {
       shop,
       amount: json.amount !== undefined ? n(json.amount as string) : undefined,
       local: typeof json.local === 'boolean' ? json.local : undefined,
+      resident: typeof json.resident === 'string' ? json.resident : undefined,
       checkpoint: e.checkpoint,
     };
   });

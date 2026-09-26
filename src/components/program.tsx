@@ -17,6 +17,7 @@ export type ChainEvent = {
   shop?: string;
   amount?: number;
   local?: boolean;
+  resident?: string;
 };
 export type State = {
   packageId: string;
@@ -47,6 +48,8 @@ export type State = {
     rally: string[];
     bonusTickets: number;
     stampedToday: string[];
+    /** Each shop's own stamp series: how many stamps Yuki has at that shop. */
+    shopStamps: Record<string, number>;
   };
   shops: ShopView[];
   events: ChainEvent[];
@@ -63,7 +66,7 @@ export const accountUrl = (id: string) => `https://suiscan.xyz/testnet/account/$
 export const short = (id: string) => `${id.slice(0, 6)}…${id.slice(-4)}`;
 
 /** Reads the program from Sui (through the server) and runs demo actions. */
-export function useProgram() {
+export function useProgram(refreshMs = 15_000) {
   const [data, setData] = useState<State | null>(null);
   const [error, setError] = useState('');
   const load = useCallback(async () => {
@@ -81,9 +84,9 @@ export function useProgram() {
     // Polling keeps every open screen in step with the chain (payments made in another tab).
     // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
-    const timer = setInterval(load, 15_000);
+    const timer = setInterval(load, refreshMs);
     return () => clearInterval(timer);
-  }, [load]);
+  }, [load, refreshMs]);
   const act = useCallback(
     async (body: Record<string, unknown>): Promise<ActionResult> => {
       const res = await fetch('/api/act', {

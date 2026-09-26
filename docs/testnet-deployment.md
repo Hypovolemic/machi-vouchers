@@ -1,6 +1,6 @@
 # Sui testnet deployment
 
-Published and set up on 26 Sep 2026 (JST) by `web/scripts/setup-testnet.mts`. Every link opens the transaction or object on Suiscan.
+Published and set up on 26 Sep 2026 (JST) by `scripts/setup-testnet.mts`. Every link opens the transaction or object on Suiscan.
 
 ## Objects
 

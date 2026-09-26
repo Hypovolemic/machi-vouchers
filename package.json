@@ -1,12 +1,16 @@
 {
-  "name": "web",
+  "name": "machi-vouchers",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "next start --hostname 127.0.0.1",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "move:build": "sui move build --path contracts/machi_voucher",
+    "move:test": "sui move test --path contracts/machi_voucher",
+    "setup:testnet": "node --import tsx scripts/setup-testnet.mts"
   },
   "dependencies": {
     "@mysten/sui": "^2.33.1",

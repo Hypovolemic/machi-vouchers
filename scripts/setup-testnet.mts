@@ -15,7 +15,7 @@ import { SHOPS } from '../src/lib/shops';
 
 const ENV_FILE = '.env.local';
 const STATE_FILE = '.data/deployment.json';
-const PACKAGE_DIR = '../contracts/machi_voucher';
+const PACKAGE_DIR = 'contracts/machi_voucher';
 const client = new SuiGrpcClient({ network: 'testnet', baseUrl: 'https://fullnode.testnet.sui.io:443' });
 
 // Suginami-style program: ¥10,000 buys ¥12,000, half small-shop only.

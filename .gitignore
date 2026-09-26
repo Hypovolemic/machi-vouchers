@@ -1,9 +1,15 @@
 # Dependencies and builds
 node_modules/
+/.pnp
+.pnp.*
+.yarn/*
 .next/
 out/
+/build
+/coverage
 contracts/**/build/
 *.tsbuildinfo
+next-env.d.ts
 
 # Secrets and local state: never commit
 .env*
@@ -11,6 +17,14 @@ contracts/**/build/
 .data/
 *.key
 *.keystore
+*.pem
+.vercel
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
 # OS / editor
 .DS_Store

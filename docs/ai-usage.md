@@ -12,8 +12,10 @@ The product requirements (PRD), design conventions and pitch plan were written b
 | --- | --- | --- |
 | Move package | `contracts/machi_voucher/` | Claude Code (Claude Opus 5.5), directed by Wei Feng, from the PRD's reference Move sketch (Appendix A), with the fixes the PRD lists: borrow order in `stamp`, `confirm_request_mut`'s return value, a stored funder for the refund at close, `suspend_shop` |
 | Move tests | `contracts/machi_voucher/tests/` | Claude Code, from the PRD's test plan (U1–U14) |
-| App scaffold | `web/` (initial files) | `create-next-app` |
-| Testnet setup script | `web/scripts/setup-testnet.mts` | Claude Code |
+| App scaffold | Initial Next.js files (first in `web/`, then moved to the repo root) | `create-next-app` |
+| Testnet setup script | `scripts/setup-testnet.mts` | Claude Code |
 | Deployment record | `docs/testnet-deployment.md` | Generated from the setup script's recorded digests |
+| Chain reads and demo signing | `src/lib/server/chain.ts`, `src/app/api/` | Claude Code, using the Mysten Sui TypeScript SDK docs |
+| Screens | `src/app/`, `src/features/`, `src/components/` | Claude Code, from the PRD's views (section 9) and the design conventions (v1.2 tokens), with plain wording |
 
 Every change was reviewed and committed by Wei Feng.

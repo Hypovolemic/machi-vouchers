@@ -1,6 +1,7 @@
 // Server only: Yuki's Apple Wallet / Google Wallet pass through PassEntry.
 // The pass is a display copy of chain state. Its QR is Yuki's Sui address; it can't move money.
 import { AppError, ids, readProgram, readResident } from './chain';
+import { SHOPS } from '../shops';
 
 const API = 'https://api.passentry.com/api/v1';
 
@@ -26,10 +27,15 @@ const yen = (v: number) => v.toLocaleString('en-US');
 const day = (ms: number) =>
   new Date(ms).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Tokyo' });
 
+export type LastTransaction = { message: string; digest: string };
+
 // Keys of the published PassEntry template "machi-voucher-demo" (a store card).
-async function current() {
+async function current(last?: LastTransaction) {
   const program = await readProgram();
   const resident = await readResident(program);
+  const perShop = SHOPS.filter((shop) => resident.shopStamps[shop.id] > 0)
+    .map((shop) => `${shop.name} ${resident.shopStamps[shop.id]}`)
+    .join(', ');
   const extId = `mv-${ids().program.slice(2, 10)}-${resident.address.slice(2, 10)}`;
   const pass = {
     vouchers: { value: yen(resident.local + resident.any) },
@@ -40,10 +46,10 @@ async function current() {
       value: `Small-shop vouchers ¥${yen(resident.local)} (small and independent shops only). Any-shop vouchers ¥${yen(resident.any)} (any registered shop). Pay in the Machi Vouchers web app: choose the shop and amount, then confirm.`,
     },
     stamp_rally: {
-      value: `Show this card at a small shop for a stamp: one per shop per day. Five different small shops add ¥${yen(program.rallyBonus)} to the small-shop vouchers.`,
+      value: `Shared stamp rally (shared series across small shops): ${resident.rally.length} of ${program.rallyTarget} different small shops; the fifth adds ¥${yen(program.rallyBonus)} to the small-shop vouchers. Shop stamp cards (each shop's own series): ${perShop || 'none yet'}. One stamp per shop per day.`,
     },
     demo: {
-      value: `Backed by Sui testnet. This card is the Sui address ${resident.address} in program ${ids().program}. Check the balance on Suiscan: https://suiscan.xyz/testnet/account/${resident.address} . Demo yen, no real money.`,
+      value: `${last ? `Last transaction: ${last.message} Check it on Suiscan: https://suiscan.xyz/testnet/tx/${last.digest} . ` : ''}Backed by Sui testnet. This card is the Sui address ${resident.address} in program ${ids().program}. Check the balance on Suiscan: https://suiscan.xyz/testnet/account/${resident.address} . Demo yen, no real money.`,
     },
     barcode: { enabled: true, type: 'qr', source: 'custom', value: resident.address, displayText: false },
   };
@@ -82,10 +88,11 @@ export async function ensurePass() {
 }
 
 /** After a payment, stamp or bonus: update the pass if Yuki has one. Never blocks the action. */
-export async function refreshPass(message?: string) {
+export async function refreshPass(last?: LastTransaction) {
   if (!passEnabled()) return;
+  const message = last?.message;
   try {
-    const { extId, pass } = await current();
+    const { extId, pass } = await current(last);
     const existing = await call(`/passes/${extId}`);
     if (existing.status !== 200) return;
     await call(`/passes/${extId}`, 'PATCH', {

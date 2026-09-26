@@ -33,7 +33,8 @@ export async function POST(request: Request) {
     const body = (await request.json()) as Record<string, unknown>;
     const result = await perform(body);
     // Payments, stamps and bonuses change what the wallet pass shows.
-    if (result.ok && body.action !== 'transfer') await refreshPass(result.message);
+    if (result.ok && body.action !== 'transfer')
+      await refreshPass({ message: result.message, digest: result.digest });
     return Response.json(result);
   } catch (e) {
     const status = e instanceof AppError ? e.status : 502;

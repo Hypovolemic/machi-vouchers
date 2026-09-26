@@ -17,6 +17,7 @@ The product requirements (PRD), design conventions and pitch plan were written b
 | Deployment record | `docs/testnet-deployment.md` | Generated from the setup script's recorded digests |
 | Chain reads and demo signing | `src/lib/server/chain.ts`, `src/app/api/` | Claude Code, using the Mysten Sui TypeScript SDK docs |
 | Screens | `src/app/`, `src/features/`, `src/components/` | Claude Code, from the PRD's views (section 9) and the design conventions, with plain wording. Palette (paper, navy, vermilion) and fonts (IBM Plex Sans JP, Zen Kaku Gothic New) chosen for this build, contrast-checked to WCAG AA |
+| App icons | `src/app/favicon.ico`, `src/app/icon.png`, `src/app/apple-icon.png` | The 街 seal, drawn by a Pillow script written by Claude Code, using Zen Kaku Gothic New Bold (SIL Open Font License) in the site's vermilion and paper colours |
 | Wallet pass | `src/lib/server/pass.ts`, `src/app/api/pass/` | Claude Code, from PassEntry's API reference and the PassEntry template `machi-voucher-demo` set up for this project |
 
 Every change was reviewed and committed by Wei Feng.

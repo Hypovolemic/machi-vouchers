@@ -1,0 +1,6 @@
+[package]
+name = "machi_voucher"
+edition = "2024"
+
+[addresses]
+machi_voucher = "0x0"

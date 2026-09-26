@@ -1,4 +1,5 @@
 import { AppError, ids, readEvents, readProgram, readResident, readShops } from '@/lib/server/chain';
+import { passEnabled } from '@/lib/server/pass';
 
 export async function GET() {
   try {
@@ -19,6 +20,7 @@ export async function GET() {
         resident,
         shops,
         events,
+        passEnabled: passEnabled(),
       },
       { headers: { 'Cache-Control': 'no-store' } },
     );

@@ -109,6 +109,8 @@ export function CardView() {
         </div>
       </div>
 
+      {data.passEnabled && <WalletPass />}
+
       <div className="card">
         <h2>Try it as Yuki</h2>
         <ol className="steps">
@@ -145,6 +147,51 @@ export function CardView() {
         {busy === 'buy' ? 'Buying…' : `Buy another set: pay ${yen(p.price)}, get ${yen(p.face)}`}
       </button>
     </>
+  );
+}
+
+/** Adds Yuki's card to Apple Wallet or Google Wallet through PassEntry. */
+function WalletPass() {
+  const [busy, setBusy] = useState(false);
+  const [url, setUrl] = useState('');
+  const [error, setError] = useState('');
+  const get = async () => {
+    setBusy(true);
+    setError('');
+    try {
+      const res = await fetch('/api/pass', { method: 'POST' });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'The wallet pass is not available right now.');
+      setUrl(json.downloadUrl);
+      window.open(json.downloadUrl, '_blank', 'noopener');
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="card">
+      <h2>Put the card in your phone</h2>
+      <p className="muted">
+        The pass shows Yuki&apos;s balances and stamps from Sui and updates after every payment and
+        stamp. Its QR is Yuki&apos;s Sui address, the same as the card above. It identifies the card; it
+        can&apos;t pay.
+      </p>
+      <div className="row">
+        {url ? (
+          <a className="button indigo" href={url} target="_blank" rel="noreferrer">
+            Open the pass: Apple Wallet or Google Wallet
+          </a>
+        ) : (
+          <button className="button indigo" disabled={busy} onClick={get}>
+            {busy ? 'Preparing the pass…' : 'Add to Apple Wallet or Google Wallet'}
+          </button>
+        )}
+      </div>
+      <p className="muted">Issued with a PassEntry trial, so the pass carries a trial watermark.</p>
+      {error && <div className="notice refused">{error}</div>}
+    </div>
   );
 }
 

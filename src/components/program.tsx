@@ -50,6 +50,7 @@ export type State = {
   };
   shops: ShopView[];
   events: ChainEvent[];
+  passEnabled: boolean;
 };
 export type ActionResult = { ok: boolean; digest: string; message: string; refusedBy?: string };
 

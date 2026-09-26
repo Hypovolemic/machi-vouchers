@@ -1,0 +1,8 @@
+# Never upload local secrets or state if someone deploys from the CLI instead of Git.
+.env*
+!.env.example
+.data
+.vercel
+contracts/**/build
+.next
+node_modules

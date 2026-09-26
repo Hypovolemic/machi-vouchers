@@ -120,9 +120,7 @@ npm run dev                # http://127.0.0.1:3000
 
 ## Team
 
-- **Wei Feng**: product, design and build. GitHub [@Hypovolemic](https://github.com/Hypovolemic)
-
-<!-- TODO(before submit): add X / LinkedIn handles. -->
+- **Wei Feng**: product, design and build (solo). GitHub [@Hypovolemic](https://github.com/Hypovolemic) · LinkedIn [wei-feng-wong](https://www.linkedin.com/in/wei-feng-wong)
 
 ## AI usage
 

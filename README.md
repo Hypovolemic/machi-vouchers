@@ -23,7 +23,12 @@ The hosted demo runs on **Sui testnet** with demo accounts that the server signs
 5. **Try to send vouchers to a friend**: the token policy refuses.
 6. Open the [city dashboard](https://machi-vouchers.vercel.app/admin).
 
-Stamps from five different small shops release a ¥500 bonus. Stamp limits reset at midnight Japan time.
+Yuki's card keeps **two stamp collections**, each labelled on screen:
+
+- **Shared stamp rally (shared series):** stamps from different small shops add up; the fifth different small shop releases a ¥500 bonus. Chain stores don't count.
+- **Shop stamp cards (individual series):** one card per shop that counts only that shop's stamps, for shops that run their own rewards. A small shop's stamp lands on its own card and in the shared rally; a chain store's stays on its own card.
+
+Both are counted from the stamp records on Sui, and one stamp per shop per day applies to both. Limits reset at midnight Japan time.
 
 ## For Sui judges: DeFi & Payments
 
@@ -79,7 +84,7 @@ It is a treasury dashboard for a public program. The assets are the program vaul
 
 ## The wallet pass
 
-A resident can add the card to **Apple Wallet or Google Wallet** (issued through PassEntry). The pass shows the vouchers, the small-shop balance, the stamp rally and the expiry, all copied from Sui, and it updates after every payment, stamp and bonus. Its QR is the resident's Sui address, the same as the in-app card: it identifies the card and can't pay. The back of the pass states the Sui address and program and links to Suiscan, so anyone can check the balance on chain. See [src/lib/server/pass.ts](src/lib/server/pass.ts).
+A resident can add the card to **Apple Wallet or Google Wallet** (issued through PassEntry). The pass shows the vouchers, the small-shop balance, the shared stamp rally, each shop's own stamps and the expiry, all copied from Sui, and it updates after every payment, stamp and bonus. The back names the last transaction with its Suiscan link. Its QR is the resident's Sui address, the same as the in-app card: it identifies the card and can't pay. The back of the pass states the Sui address and program and links to Suiscan, so anyone can check the balance on chain. See [src/lib/server/pass.ts](src/lib/server/pass.ts).
 
 Verified: the pass is issued and updated from Sui state (checked through PassEntry's API after each payment), and PassEntry reports it installed on an Android device. Not yet verified: Apple Wallet on an iPhone. The pass uses a PassEntry trial, so it carries a trial watermark.
 
@@ -87,7 +92,7 @@ Verified: the pass is issued and updated from Sui state (checked through PassEnt
 
 - **Real:** the Move package and its 19 tests; the testnet deployment; every payment, stamp, bonus and purchase in the hosted demo is a signed Sui testnet transaction; the dashboard reads live chain data; the wallet pass is issued and updated by PassEntry.
 - **Demo:** one demo resident (Yuki) and six fictional shops in a demo city; the server holds their testnet keys and signs for them so visitors need no wallet; dJPY is a demo token the issuer can mint; purchase tickets are issued by the server.
-- **Not built:** Google sign-in (zkLogin) and sponsored fees, camera scanning at the counter, family cards, per-person purchase limits onchain (the purchase ticket is the limit), and bank settlement of real yen.
+- **Not built:** shop-specific rewards and letting a shop opt out of the shared rally (both need a contract change), Google sign-in (zkLogin) and sponsored fees, camera scanning at the counter, family cards, per-person purchase limits onchain (the purchase ticket is the limit), and bank settlement of real yen.
 
 ## Run it yourself
 

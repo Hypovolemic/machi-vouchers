@@ -1,11 +1,18 @@
 import type { Metadata } from 'next';
-import { IBM_Plex_Sans_JP } from 'next/font/google';
+import { IBM_Plex_Sans_JP, Zen_Kaku_Gothic_New } from 'next/font/google';
 import { Nav } from '@/components/nav';
 import './globals.css';
 
 const plex = IBM_Plex_Sans_JP({
   variable: '--font-plex',
   weight: ['400', '500', '600'],
+  subsets: ['latin'],
+});
+
+// Display face for headings and numbers: bold, with real Japanese glyphs.
+const display = Zen_Kaku_Gothic_New({
+  variable: '--font-display',
+  weight: ['700'],
   subsets: ['latin'],
 });
 
@@ -16,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={plex.variable}>
+    <html lang="en" className={`${plex.variable} ${display.variable}`}>
       <body>
         <div className="banner">
           Live on Sui testnet · demo accounts signed by this server · demo yen (dJPY), no real money

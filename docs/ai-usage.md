@@ -16,7 +16,7 @@ The product requirements (PRD), design conventions and pitch plan were written b
 | Testnet setup script | `scripts/setup-testnet.mts` | Claude Code |
 | Deployment record | `docs/testnet-deployment.md` | Generated from the setup script's recorded digests |
 | Chain reads and demo signing | `src/lib/server/chain.ts`, `src/app/api/` | Claude Code, using the Mysten Sui TypeScript SDK docs |
-| Screens | `src/app/`, `src/features/`, `src/components/` | Claude Code, from the PRD's views (section 9) and the design conventions (v1.2 tokens), with plain wording |
-| Wallet pass | `src/lib/server/pass.ts`, `src/app/api/pass/` | Claude Code, from PassEntry's API reference and the team's published PassEntry template (`machi-voucher-demo`) |
+| Screens | `src/app/`, `src/features/`, `src/components/` | Claude Code, from the PRD's views (section 9) and the design conventions, with plain wording. Palette (paper, navy, vermilion) and fonts (IBM Plex Sans JP, Zen Kaku Gothic New) chosen for this build, contrast-checked to WCAG AA |
+| Wallet pass | `src/lib/server/pass.ts`, `src/app/api/pass/` | Claude Code, from PassEntry's API reference and the PassEntry template `machi-voucher-demo` set up for this project |
 
 Every change was reviewed and committed by Wei Feng.
